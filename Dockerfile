@@ -37,4 +37,4 @@ RUN service postgresql start &&\
   RAILS_ENV=production rake db:migrate
 
 EXPOSE 3000
-CMD service postgresql start && rails server -e production -p 3000 && rake start_workers
+CMD service postgresql start && nohup rails server -e production -p 3000 &> projectmonitor.log && rake start_workers
