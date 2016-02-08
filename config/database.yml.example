@@ -1,7 +1,8 @@
 development: &development
   adapter: postgresql
   database: projectmonitor_development
-  host: localhost
+  template: template0
+  username: postgres
 
 test:
   <<: *development
