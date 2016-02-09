@@ -1,4 +1,4 @@
-FROM ruby:2.0
+FROM phusion/passenger-ruby20
 MAINTAINER Mahmoud Nassif, <contact@mahmoud.ca>
 
 RUN apt-get update && apt-get install -y \
@@ -22,19 +22,26 @@ WORKDIR /usr/src/app
 COPY Gemfile /usr/src/app/
 COPY Gemfile.lock /usr/src/app/
 RUN bundle install --without development test
+RUN gem install whenever
+RUN gem install foreman
 
 COPY . /usr/src/app
-COPY config/postgresql/pg_hba.conf /etc/postgresql/9.4/main/pg_hba.conf
+COPY config/postgresql/pg_hba.conf /etc/postgresql/9.3/main/pg_hba.conf
 
 USER postgres
 RUN mkdir -p ~/pgsql/data
-RUN /usr/lib/postgresql/9.4/bin/initdb -D ~/pgsql/data
+RUN /usr/lib/postgresql/9.3/bin/initdb -D ~/pgsql/data
 
 USER root
 RUN service postgresql start &&\
-  rake setup &&\
-  RAILS_ENV=production rake db:create &&\
-  RAILS_ENV=production rake db:migrate
+  bundle exec rake setup &&\
+  RAILS_ENV=production bundle exec rake db:create &&\
+  RAILS_ENV=production bundle exec rake db:migrate
+
+RUN wheneverize .
+RUN whenever > /usr/src/app/crontab.conf
+RUN crontab /usr/src/app/crontab.conf
+RUN cron
 
 EXPOSE 3000
-CMD service postgresql start && rails server -e production -p 3000 &> projectmonitor.log && rake start_workers
+CMD service postgresql start && PORT=3000 RAILS_ENV=production foreman start
