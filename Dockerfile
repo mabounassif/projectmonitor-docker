@@ -1,5 +1,5 @@
 FROM ruby:2.0
-MAINTAINER Mahmoud Nassif, <mahmoud.n@samsung.com>
+MAINTAINER Mahmoud Nassif, <contact@mahmoud.ca>
 
 RUN apt-get update && apt-get install -y \
     git \
