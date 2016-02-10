@@ -28,6 +28,5 @@ $(function() {
   ProjectCheck.init();
   GithubRefresh.init();
   HerokuRefresh.init();
-  RubyGemsRefresh.init();
   ProjectFilters.init();
 });
